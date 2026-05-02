@@ -3,9 +3,10 @@ import { Send, ThumbsUp, ThumbsDown, Minus } from "lucide-react";
 
 interface InteractionPanelProps {
   onRefresh: () => void;
+  selectedCity: string | null;
 }
 
-export const InteractionPanel: React.FC<InteractionPanelProps> = ({ onRefresh }) => {
+export const InteractionPanel: React.FC<InteractionPanelProps> = ({ onRefresh, selectedCity }) => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [aiMessage, setAiMessage] = useState<string | null>(null);
@@ -62,7 +63,7 @@ export const InteractionPanel: React.FC<InteractionPanelProps> = ({ onRefresh })
       await fetch("/api/vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ vote }),
+        body: JSON.stringify({ vote, city: selectedCity }),
       });
       onRefresh();
     } catch (err) {
@@ -80,7 +81,7 @@ export const InteractionPanel: React.FC<InteractionPanelProps> = ({ onRefresh })
       const res = await fetch("/api/sentiment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: input }),
+        body: JSON.stringify({ text: input, city: selectedCity }),
       });
       const data = await res.json();
       

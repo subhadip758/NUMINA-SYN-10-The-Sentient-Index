@@ -85,15 +85,22 @@ async function startServer() {
   });
 
   app.post("/api/vote", (req, res) => {
-    const { vote } = req.body; // "yes", "no", "neutral"
+    const { vote, city } = req.body; // "yes", "no", "neutral"
     const impact = vote === "yes" ? 0.05 : vote === "no" ? -0.05 : 0;
     currentScore = Math.max(1, Math.min(10, currentScore + impact));
-    addLog(`User vote received: ${vote.toUpperCase()}. Impact: ${impact.toFixed(3)}`, vote === "yes" ? "success" : vote === "no" ? "warning" : "info");
+    
+    if (city && city in cities) {
+      cities[city as keyof typeof cities] = Math.max(1, Math.min(10, cities[city as keyof typeof cities] + impact * 2));
+      addLog(`User vote received for ${city}: ${vote.toUpperCase()}. Impact: ${impact.toFixed(3)}`, vote === "yes" ? "success" : vote === "no" ? "warning" : "info");
+    } else {
+      addLog(`User vote received: ${vote.toUpperCase()}. Impact: ${impact.toFixed(3)}`, vote === "yes" ? "success" : vote === "no" ? "warning" : "info");
+    }
+    
     res.json({ success: true, newScore: currentScore });
   });
 
   app.post("/api/sentiment", (req, res) => {
-    const { text } = req.body;
+    const { text, city } = req.body;
     
     // Simulated sentiment analysis
     let score = 0.5;
@@ -114,7 +121,14 @@ async function startServer() {
     
     const impact = (score - 0.5) * 0.2; // Map 0-1 to -0.1 to 0.1
     currentScore = Math.max(1, Math.min(10, currentScore + impact));
-    addLog(`Neural sentiment analysis: ${(score * 100).toFixed(0)}% stability.`, score > 0.6 ? "success" : score < 0.4 ? "error" : "info");
+    
+    if (city && city in cities) {
+      cities[city as keyof typeof cities] = Math.max(1, Math.min(10, cities[city as keyof typeof cities] + impact * 2));
+      addLog(`Sentiment analysis for ${city}: ${(score * 100).toFixed(0)}% stability.`, score > 0.6 ? "success" : score < 0.4 ? "error" : "info");
+    } else {
+      addLog(`Neural sentiment analysis: ${(score * 100).toFixed(0)}% stability.`, score > 0.6 ? "success" : score < 0.4 ? "error" : "info");
+    }
+    
     res.json({ success: true, newScore: currentScore, aiResponse });
   });
 

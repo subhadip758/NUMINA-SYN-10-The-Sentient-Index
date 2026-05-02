@@ -122,7 +122,7 @@ export default function App() {
 
         {/* Right Section: Interaction & Trends */}
         <div className="flex flex-col gap-8 w-full max-w-md">
-          <InteractionPanel onRefresh={fetchData} />
+          <InteractionPanel onRefresh={fetchData} selectedCity={selectedCity} />
           
           {/* Real-time System Logs */}
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 h-40 overflow-hidden flex flex-col">
